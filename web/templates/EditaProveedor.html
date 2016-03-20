@@ -1,0 +1,338 @@
+<{include file="top.html"}>
+
+<script type="text/javascript">
+
+	$(document).ready(function() {
+
+		var choices;
+		var data;
+		
+		var sel_marca;
+		var sel_servicio;
+		var sel_combustible;
+		var sel_region;
+		var sel_comuna;
+	
+		// selecciono los itemes en los combos
+		
+		sel_estado = $('#sel_estado').val();
+		
+		if (sel_estado != 0) { 
+			$('#estado').val(sel_estado);
+		}
+
+		sel_bloqueo = $('#sel_bloqueo').val();
+		
+		if (sel_bloqueo != 0) { 
+			$('#bloqueo').val(sel_bloqueo);
+		}
+		
+
+		// texto en USER HELP DESK
+		$('.sidebar_box p').html('<{$user_help_desk}>');
+		
+		$('#rut').Rut();	
+		
+		jQuery.validator.addMethod( 
+			"selectNone", 
+			function(value, element) { 
+				if (element.value == "none") 
+				{ 
+				return false; 
+				} 
+				else return true; 
+			}, 
+			"Favor elija una opci&oacute;n." 
+		); 
+		
+		$.validator.addMethod(
+			"rut",
+			function(value, element) {
+				return this.optional(element) || $.Rut.validar(value);
+			},
+			"Este campo debe ser un rut valido."
+		);
+
+		$('#edita_proveedor').validate({
+			rules: {
+				rut: {
+					rut: true
+				},
+				razon_social: {
+					required: true,
+					minlegth: 10
+				},
+				nombre_fantasia: {
+					required: true,
+					minlegth: 6
+				},
+				direccion_facturacion: 'required',
+				descripcion: {
+					required: true,
+					minlegth: 4
+				}
+			}, // end rules
+			messages: {
+				rut: {
+					rut: "Favor ingrese RUT v&aacute;lido"
+				},
+				razon_social: {
+					required: "Favor ingrese 'raz&oacute;n social'"
+				},
+				nombre_fantasia: {
+					required: "Favor ingrese nombre de fantas&iacute;a"
+				},
+				direccion_facturacion: {
+					required: "Favor ingrese la direcci&oacute;n de facturaci&oacute;n"
+				}
+			}, // end messages
+			errorPlacement: function(error, element) {
+				if ( element.is(":radio") || element.is(":checkbox")) {
+					error.appendTo( element.parent());
+				} else {
+					error.insertAfter(element);
+				}
+			} // end errorPlacement			
+		}); // end validate()
+		
+		/*
+		$.NiceJForms.build({
+			imagesPath:"nicejforms/css/images/default/"
+		});
+		*/
+		$('#rut').focus();
+		
+		
+	}); // end ready
+
+</script>
+
+<!--script type="text/javascript" src="js/agrega_proveedor.js"></script-->
+
+</head>
+<body>
+<div id="main_container">
+
+	<{include file="header.html"}>
+    
+    <div class="main_content">
+    
+    <{include file="upper_menu.html"}>
+                    
+    <div class="center_content">  
+    
+    
+    
+    <div class="left_content">
+            
+            
+        <div class="sidebarmenu">
+                        
+			<a class="menuitem" href="<{$receiver}>?do=AgregaSucursal&id_proveedor=<{$id_proveedor}>">Agrega Sucursal</a>
+			
+	        <form action="<{$receiver}>?do=GestionaProveedores" method="post" id="buscar" name="form_search">
+	            <input type="hidden" name="search_keyword_proveedor" id="search_keyword_proveedor" class="search_input" value="<{$search_keyword_proveedor}>" />
+				<!--            <input type="image" class="search_submit" src="images/search.png" />-->
+				<a class="menuitem_green" href="#" onclick="document.form_search.submit();">Volver al listado</a>
+            </form>            
+
+		</div>
+			
+            <{include file="sidebar_box.html"}>
+
+            <!--
+            
+            <div class="sidebar_box">
+                <div class="sidebar_box_top"></div>
+                <div class="sidebar_box_content">
+                <h4>Important notice</h4>
+                <img src="images/notice.png" alt="" title="" class="sidebar_icon_right" />
+                <p>
+Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                </p>                
+                </div>
+                <div class="sidebar_box_bottom"></div>
+            </div>
+            
+            -->
+            <!--
+            <div class="sidebar_box">
+                <div class="sidebar_box_top"></div>
+                <div class="sidebar_box_content">
+                <h5>Download photos</h5>
+                <img src="images/photo.png" alt="" title="" class="sidebar_icon_right" />
+                <p>
+Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                </p>                
+                </div>
+                <div class="sidebar_box_bottom"></div>
+            </div>  
+            -->
+            <!--
+            <div class="sidebar_box">
+                <div class="sidebar_box_top"></div>
+                <div class="sidebar_box_content">
+                <h3>To do List</h3>
+                <img src="images/info.png" alt="" title="" class="sidebar_icon_right" />
+                <ul>
+                <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</li>
+                 <li>Lorem ipsum dolor sit ametconsectetur <strong>adipisicing</strong> elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</li>
+                  <li>Lorem ipsum dolor sit amet, consectetur <a href="#">adipisicing</a> elit.</li>
+                   <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</li>
+                    <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</li>
+                     <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</li>
+                </ul>                
+                </div>
+                <div class="sidebar_box_bottom"></div>
+            </div>
+            --> 
+    
+    </div>  
+    
+    <div class="right_content">            
+        
+	<h2>Edita&nbsp;Proveedor</h2>
+                    
+                    
+	<!--
+	 <a href="#" class="bt_green"><span class="bt_green_lft"></span><strong>Add new item</strong><span class="bt_green_r"></span></a>
+     <a href="#" class="bt_blue"><span class="bt_blue_lft"></span><strong>View all items from category</strong><span class="bt_blue_r"></span></a>
+     <a href="#" class="bt_red"><span class="bt_red_lft"></span><strong>Delete items</strong><span class="bt_red_r"></span></a> 
+     
+     
+        <div class="pagination">
+        <span class="disabled"><< prev</span><span class="current">1</span><a href="">2</a><a href="">3</a><a href="">4</a><a href="">5</a>…<a href="">10</a><a href="">11</a><a href="">12</a>...<a href="">100</a><a href="">101</a><a href="">next >></a>
+        </div> 
+     -->
+     <!--
+     <h2>Warning Box examples</h2>
+      
+     <div class="warning_box">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut.
+     </div>
+     <div class="valid_box">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut.
+     </div>
+     <div class="error_box">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut.
+     </div>  
+    -->
+      
+    
+     
+         <div class="form">
+			<form action="<{$receiver}>?do=EditaProveedor" method="post" class="niceform" id="edita_proveedor" accept-charset="iso-8859-1">
+				<!--almaceno los valores seleccionados pre-submit en los combos, para seleccionar postsubmit en ready() -->
+				<input type="hidden" name="sel_estado" id="sel_estado" value="<{$estado}>" />
+				<input type="hidden" name="sel_bloqueo" id="sel_bloqueo" value="<{$bloqueo}>" />
+         		
+                <fieldset>
+					
+                    <{include file="datos_proveedor.html"}>
+                    
+                    <dl class="submit">
+                    	<input type="submit" name="submit" id="submit" value="Grabar" />
+                    </dl>
+                    
+                    <{if isset($exito)}>
+                    	<{if $exito}>
+							<div class="valid_box">
+							   <{$status_message}>
+							</div>
+                    	<{else}>
+							<div class="error_box">
+							   <{$status_message}>
+							</div>
+						<{/if}>
+					<{/if}>
+					
+                     
+                    <dl>
+                    	<label for="message" class="error"><{$message}></label>
+                    </dl>
+                     
+                    
+                	
+                	</fieldset>
+                
+			</form>
+         </div>  
+      
+		<!-- the input fields that will hold the variables we will use -->  
+		<input type='hidden' id='current_page' />  
+		<input type='hidden' id='show_per_page' />  
+                    
+		<table id="rounded-corner" summary="2007 Major IT Companies' Profit">
+			<thead>
+				<tr>
+					<th scope="col" class="rounded-company">Nombre&nbsp;Sucursal&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+					<th scope="col" class="rounded-company">Direcci&oacute;n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+					<th scope="col" class="rounded-company">Comuna&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+					<th scope="col" class="rounded">Regi&oacute;n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+					<th scope="col" class="rounded-q4">Acciones</th>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr>
+					<{if isset($exito)}>
+					   <{if $exito}>
+							<td colspan="4" class="rounded-foot-left"><em>La b&uacute;squeda arroj&oacute; <{$row_number}> registro(s).</em></td>
+						<{/if}>
+					<{else}>
+						<td colspan="4" class="rounded-foot-left"><em>&nbsp;</em></td>
+					<{/if}>
+					<td class="rounded-foot-right">&nbsp;</td>
+
+				</tr>
+			</tfoot>
+			<tbody>
+				<{foreach from=$sucursales item=sucursal}>
+					<tr>
+						<td><{$sucursal.descripcion|htmlentities}></td>
+						<td><{$sucursal.direccion|htmlentities}></td>
+						<td><{$sucursal.comuna|htmlentities}></td>
+						<td><{$sucursal.region|htmlentities}></td>
+						
+						<td>
+							<{if ($usuario_aplicacion->nombre_usuario == 'admin')}>
+			
+									<a href="" onClick="detalleSucursal(<{$sucursal.id}>); return false"><img src="images/detail.png" alt="Detalle" title="Detalle" border="0" /></a>
+									
+									<a href="<{$receiver}>?do=EditaSucursal&id_proveedor_sucursal=<{$sucursal.id}>"><img src="images/edit.png" alt="" title="Edita Sucursal" border=0 width=16 height=16 /></a>
+			
+									<{* <--a href="<{$receiver}>?do=VerConsultas&id_proveedor_sucursal=<{$proveedor.id}>"><img src="images/help.png" alt="" title="Consultas" border=0 width=16 height=16 /></a> *}>
+
+									<a href="<{$sucursal->id}>" class="confirm_delete"><img src="images/trash.png" alt="Elimina Sucursal" title="Elimina Sucursal" border="0" /></a>
+			
+							<{/if}>
+						</td>
+					</tr>
+				<{/foreach}>
+			</tbody>
+		</table>
+
+		<{if isset($exito)}>
+			<{if $exito && $row_number > 0}>
+				<!-- An empty div which will be populated using jQuery -->
+				<div class="pagination">
+					<!--<span class="disabled"><< prev</span><span class="current">1</span><a href="">2</a><a href="">3</a><a href="">4</a><a href="">5</a>…<a href="">10</a><a href="">11</a><a href="">12</a>...<a href="">100</a><a href="">101</a><a href="">next >></a>-->
+				</div> 
+			<{/if}>
+		<{/if}>
+    
+     </div><!-- end of right content-->
+            
+                    
+  </div>   <!--end of center content -->               
+                    
+                    
+    
+    
+    <div class="clear"></div>
+    </div> <!--end of main content-->
+	
+    <{include file="footer.html"}>
+
+</div>		
+</body>
+</html>

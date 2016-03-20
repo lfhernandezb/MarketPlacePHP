@@ -1,0 +1,425 @@
+<{include file="top.html"}>
+
+<script type="text/javascript">
+
+	$(document).ready(function() {
+		
+		var sel_region;
+		var sel_comuna;
+		
+		// selecciono region
+		sel_region = $('#sel_region').val();
+		
+		if (sel_region != 0) { 
+			$('#region').val(sel_region);
+		}
+
+		// selecciono comuna
+		sel_comuna = $('#sel_comuna').val();
+		
+		if (sel_comuna != 0) { 
+			$('#comuna').val(sel_comuna);
+		}
+
+		<{if isset($exito)}>
+			<{if $exito}>
+			    
+				var choices;
+				var data;
+				
+				var sel_marca;
+				var sel_servicio;
+				var sel_combustible;
+				
+				
+			
+
+				sel_comuna = $('#sel_comuna').val();
+				
+				if (sel_comuna != 0) {
+		
+					// cargo las comunas presentes presubmit; las opciones se graban en la sesion en comando Ajax
+					choices = '';
+		         	choices += "<option value=\"\" selected=\"selected\">Comuna</option>";
+		        
+					<{if isset($options_comunas)}>	
+						data = <{$options_comunas}>;
+		                
+			            $.each(data.comunas, function(index, comuna) {
+			                choices += "<option value=\"" + comuna.id.toString() + "\">";
+			                choices += comuna.descripcion.toString();
+			                choices += "</option>";
+			            });
+			            
+					<{/if}>
+		          
+					// elimino el contenido del control
+		            $('#comuna').text('');
+		            // agrego las opciones al combobox
+		            $(choices).appendTo('#comuna');
+					// dejo seleccionado el mismo pre submit
+					$('#comuna').val(sel_comuna)
+					
+					// habilito combo de comunas, ya que no hay region seleccionada
+					$('#comuna').attr('disabled', false);
+				}
+										
+				// evito grabar nuevamente
+				$('#submit').attr('disabled', true);
+			<{/if}>
+		<{else}>
+			//$('#comuna').attr('disabled', true);
+		<{/if}>
+
+		$('#multimarca').change(function() {
+			enabled = false;
+			if (this.checked) {
+				enabled = true;
+			}
+				
+			//$('#chk_marcas').attr('disabled', enabled); 
+			$('input[name^=chk_marcas]').attr('disabled', enabled);     
+		});
+
+		$('#region').change(function() {
+			// al cambiar la region por algo valido, debo cargar en el combo de comuna las que le pertenecen
+			// si se selecciona 'Region', debo descargar ciudades y R/E's
+			var data;
+			var opt;
+			var choices;
+			var sel = $(this).val().toString();
+			
+			// alert(sel);
+			
+			if ($(this).hasClass('error')) {
+				$(this).removeClass('error');
+				$('.error').remove();
+			}
+
+			if (sel == "none") {
+				// elegido titulo
+				
+				// genero opciones de combo de ciudades
+				choices = '';
+				choices += "<option value=\"\" selected=\"selected\">Comuna</option>";
+
+				// deshabilito select (y niceform) de comunas
+				$('#comuna').attr('disabled', true);
+			}
+			else {
+				// region valida del combo
+								
+				// genero opciones de select comuna
+				$.ajax({
+					async: false,
+					url: "<{$receiver}>?do=Ajax&req=getComunas&id_region=" + sel,
+					type: 'GET',
+					dataType: 'json',
+					error: function(xhr){
+						if (xhr.status == 401) {
+							// sesion expirada, redirijo a login
+							window.location = "<{$receiver}>";
+						}
+						else {
+							// error en ajax
+							alert("An error occured: " + xhr.status + " " + xhr.statusText);
+						}
+					},
+					success: function(output_string){
+						//alert(output_string);
+
+						choices = '';
+						//var choices = "<select size=\"1\" name=\"ciudad\" id=\"ciudad\" >"; 
+						choices += "<option value=\"\" selected=\"selected\">Comuna</option>";
+
+						$.each(output_string.comunas, function(index, comuna) {
+							choices += "<option value=\"" + comuna.id.toString() + "\">";
+							choices += comuna.descripcion.toString();
+							choices += "</option>";
+						});
+						
+						// agrego las opciones generadas al select de comunas
+						$('#comuna').text('');
+						$(choices).appendTo('#comuna');
+						
+						// re-genero niceform de select ciudades
+						// * recrea_nf_select($('#ciudad'), 2);
+
+						// habilito select (y niceform) de comunas
+						$('#comuna').attr('disabled', false);
+					}
+				});
+
+			}
+			
+		}); // end change
+
+		// texto en USER HELP DESK
+		$('.sidebar_box p').html('<{$user_help_desk}>');
+		
+		jQuery.validator.addMethod( 
+			"selectNone", 
+			function(value, element) { 
+				if (element.value == "none") 
+				{ 
+				return false; 
+				} 
+				else return true; 
+			}, 
+			"Favor elija una opci&oacute;n." 
+		); 
+		
+		$('#edita_sucursal').validate({
+			rules: {
+				descripcion: {
+					required: true,
+					minlegth: 4
+				},
+				direccion: 'required',
+				region: { 
+					selectNone: true 
+				},
+				comuna: { 
+					selectNone: true 
+				},
+				telefono1: 'required',
+				rut: {
+					required: true,
+					minlegth: 8
+				},
+				correo: {
+					required: true,
+					email: true
+				},
+				'chk_servicios[]': {
+					required: true,
+					minlength: 1
+				},				
+				'chk_marcas[]': {
+					required: "#multimarca:",
+					minlength: 1
+				},				
+				'chk_combustibles[]': {
+					required: true,
+					minlength: 1
+				}				
+			}, // end rules
+			messages: {
+				descripcion: {
+					required: "Favor ingrese nombre de la sucursal"
+				},
+				direccion: {
+					required: "Favor ingrese la direcci&oacute;n de la sucursal"
+				},
+				region: {
+					required: "Favor seleccione regi&oacute;n"
+				},
+				comuna: {
+					required: "Favor seleccione comuna"
+				},
+				telefono1: {
+					required: "Favor ingrese tel&eacute;fono"
+				},
+				correo: {
+					required: "Favor ingrese email",
+					email: "El email ingresado no es v&aacute;lido"
+				},
+				'chk_servicios[]': {
+					required: "Favor elija al menos 1 servicio"
+				},
+				'chk_marcas[]': {
+					required: "Favor elija al menos 1 marca"
+				},
+				'chk_combustibles[]': {
+					required: "Favor elija al menos 1 combustible"
+				}
+			}, // end messages
+			errorPlacement: function(error, element) {
+				if ( element.is(":radio") || element.is(":checkbox")) {
+					error.appendTo( element.parent());
+				} else {
+					error.insertAfter(element);
+				}
+			} // end errorPlacement			
+		}); // end validate()
+		
+		/*
+		$.NiceJForms.build({
+			imagesPath:"nicejforms/css/images/default/"
+		});
+		*/
+		$('#razon_social').focus();
+		
+		
+	}); // end ready
+
+</script>
+
+<!--script type="text/javascript" src="js/agrega_proveedor.js"></script-->
+
+</head>
+<body>
+<div id="main_container">
+
+	<{include file="header.html"}>
+    
+    <div class="main_content">
+    
+    <{include file="upper_menu.html"}>
+                    
+    <div class="center_content">  
+    
+    
+    
+    <div class="left_content">
+            
+            
+        <div class="sidebarmenu">
+                        
+	        <form action="<{$receiver}>?do=EditaProveedor" method="post" id="buscar" name="form_search">
+	            <input type="hidden" name="id_proveedor" lass="search_input" value="<{$id_proveedor}>" />
+				<!--            <input type="image" class="search_submit" src="images/search.png" />-->
+				<a class="menuitem_green" href="#" onclick="document.form_search.submit();">Volver a Edita Proveedor</a>
+            </form>            
+
+		</div>
+			
+            <{include file="sidebar_box.html"}>
+
+            <!--
+            
+            <div class="sidebar_box">
+                <div class="sidebar_box_top"></div>
+                <div class="sidebar_box_content">
+                <h4>Important notice</h4>
+                <img src="images/notice.png" alt="" title="" class="sidebar_icon_right" />
+                <p>
+Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                </p>                
+                </div>
+                <div class="sidebar_box_bottom"></div>
+            </div>
+            
+            -->
+            <!--
+            <div class="sidebar_box">
+                <div class="sidebar_box_top"></div>
+                <div class="sidebar_box_content">
+                <h5>Download photos</h5>
+                <img src="images/photo.png" alt="" title="" class="sidebar_icon_right" />
+                <p>
+Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                </p>                
+                </div>
+                <div class="sidebar_box_bottom"></div>
+            </div>  
+            -->
+            <!--
+            <div class="sidebar_box">
+                <div class="sidebar_box_top"></div>
+                <div class="sidebar_box_content">
+                <h3>To do List</h3>
+                <img src="images/info.png" alt="" title="" class="sidebar_icon_right" />
+                <ul>
+                <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</li>
+                 <li>Lorem ipsum dolor sit ametconsectetur <strong>adipisicing</strong> elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</li>
+                  <li>Lorem ipsum dolor sit amet, consectetur <a href="#">adipisicing</a> elit.</li>
+                   <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</li>
+                    <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</li>
+                     <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</li>
+                </ul>                
+                </div>
+                <div class="sidebar_box_bottom"></div>
+            </div>
+            --> 
+    
+    </div>  
+    
+    <div class="right_content">            
+        
+	<h2>Edita&nbsp;Sucursal</h2>
+                    
+                    
+	<!--
+	 <a href="#" class="bt_green"><span class="bt_green_lft"></span><strong>Add new item</strong><span class="bt_green_r"></span></a>
+     <a href="#" class="bt_blue"><span class="bt_blue_lft"></span><strong>View all items from category</strong><span class="bt_blue_r"></span></a>
+     <a href="#" class="bt_red"><span class="bt_red_lft"></span><strong>Delete items</strong><span class="bt_red_r"></span></a> 
+     
+     
+        <div class="pagination">
+        <span class="disabled"><< prev</span><span class="current">1</span><a href="">2</a><a href="">3</a><a href="">4</a><a href="">5</a>…<a href="">10</a><a href="">11</a><a href="">12</a>...<a href="">100</a><a href="">101</a><a href="">next >></a>
+        </div> 
+     -->
+     <!--
+     <h2>Warning Box examples</h2>
+      
+     <div class="warning_box">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut.
+     </div>
+     <div class="valid_box">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut.
+     </div>
+     <div class="error_box">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut.
+     </div>  
+    -->
+      
+    
+     
+         <div class="form">
+			<form action="<{$receiver}>?do=EditaSucursal" method="post" class="niceform" id="edita_sucursal" accept-charset="iso-8859-1">
+				<!--almaceno los valores seleccionados pre-submit en los combos, para seleccionar postsubmit en ready() -->
+				<input type="hidden" name="sel_region" id="sel_region" value="<{$region}>" />
+				<input type="hidden" name="sel_comuna" id="sel_comuna" value="<{$comuna}>" />
+				<input type="hidden" name="sel_estado" id="sel_estado" value="<{$estado}>" />
+				<input type="hidden" name="sel_bloqueo" id="sel_bloqueo" value="<{$bloqueo}>" />
+         		
+                <fieldset>
+					
+					<{include file="datos_sucursal.html"}>
+					
+                    <dl class="submit">
+                    	<input type="submit" name="submit" id="submit" value="Grabar" />
+                    </dl>
+                    
+                    <{if isset($exito)}>
+                    	<{if $exito}>
+							<div class="valid_box">
+							   <{$status_message}>
+							</div>
+                    	<{else}>
+							<div class="error_box">
+							   <{$status_message}>
+							</div>
+						<{/if}>
+					<{/if}>
+					
+                     
+                    <dl>
+                    	<label for="message" class="error"><{$message}></label>
+                    </dl>
+                     
+                    
+                	
+                	</fieldset>
+                
+			</form>
+         </div>  
+      
+    
+     </div><!-- end of right content-->
+            
+                    
+  </div>   <!--end of center content -->               
+                    
+                    
+    
+    
+    <div class="clear"></div>
+    </div> <!--end of main content-->
+	
+    <{include file="footer.html"}>
+
+</div>		
+</body>
+</html>

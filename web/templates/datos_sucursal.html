@@ -1,0 +1,145 @@
+                    <dl>
+                        <dt><label for="descripcion">Nombre Sucursal&nbsp;*</label></dt>
+                        <dd><input type="text" name="descripcion" id="descripcion" size="75" value="<{$descripcion}>" /></dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="direccion">Direcci&oacute;n&nbsp;*</label></dt>
+                        <dd><input type="text" name="direccion" id="direccion" size="75" value="<{$direccion|htmlentities}>" /></dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="region">Regi&oacute;n&nbsp;*</label></dt>
+                        <dd>
+                            <select size="1" name="region" id="region" value="<{$region}>">
+                                <option value="none">Regi&oacute;n</option>
+
+						    	<{foreach from=$regiones item=region}>
+						    	
+						    		<option value="<{$region.id}>"><{$region.descripcion}></option>
+						            
+						        <{/foreach}>
+
+                                
+                            </select>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="comuna">Comuna&nbsp;*</label></dt>
+                        <dd>
+                            <select size="1" name="comuna" id="comuna" value="<{$comuna}>">
+                                <option value="none">Comuna</option>
+                                
+                                
+                            </select>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="telefono1">Tel&eacute;fono&nbsp;1&nbsp;*</label></dt>
+                        <dd><input type="text" name="telefono1" id="telefono1" size="75" value="<{$telefono1}>" /></dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="telefono2">Tel&eacute;fono 2</label></dt>
+                        <dd><input type="text" name="telefono2" id="telefono2" size="75" value="<{$telefono2}>" /></dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="fax">Fax</label></dt>
+                        <dd><input type="text" name="fax" id="fax" size="75" value="<{$fax}>" /></dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="correo">Correo&nbsp;*</label></dt>
+                        <dd><input type="text" name="correo" id="correo" size="75" value="<{$correo}>" /></dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="latitud">Latitud</label></dt>
+                        <dd><input type="text" name="latitud" id="latitud" size="75" value="<{$latitud}>" /></dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="longitud">Longitud</label></dt>
+                        <dd><input type="text" name="longitud" id="longitud" size="75" value="<{$longitud}>" /></dd>
+                    </dl>
+
+                    <dl>
+                        <dt><label>Seleccione&nbsp;Servicios&nbsp;*</label></dt>
+                        <dd>
+							<div>
+								<table>
+									<{foreach from=$servicios item=servicio name=s}>
+										<{if ($smarty.foreach.s.iteration - 1) is div by 3 && $smarty.foreach.s.iteration > 1}>
+										</tr>
+										<{/if}>
+										<{if ($smarty.foreach.s.iteration - 1) is div by 3}>
+										<tr>
+										<{/if}>
+											<td width=400px>
+												<{if in_array($servicio.id, $chk_servicios)}>
+													<input type="checkbox" name="chk_servicios[]" value="<{$servicio.id}>" checked="checked" />
+												<{else}>
+													<input type="checkbox" name="chk_servicios[]" value="<{$servicio.id}>" />
+												<{/if}>
+												<label class="check_label"><{$servicio.descripcion|htmlentities}></label>
+											</td>
+									<{/foreach}>
+								</table>
+							</div>
+                        </dd>
+                    </dl>
+
+                    <dl>
+                        <dt><label>Seleccione&nbsp;Marcas&nbsp;*</label></dt>
+                        <dd>
+							<div>
+								<{if isset($multimarca)}>
+									<input type="checkbox" name="multimarca" id="multimarca" value="" checked="checked" />
+								<{else}>
+									<input type="checkbox" name="multimarca" id="multimarca" value="" />
+								<{/if}>
+								<label class="check_label">Multimarca</label>
+							</div>
+							<div>
+								<table>
+									<{foreach from=$marcas item=marca name=m}>
+										<{if ($smarty.foreach.m.iteration - 1) is div by 4 && $smarty.foreach.m.iteration > 1}>
+										</tr>
+										<{/if}>
+										<{if ($smarty.foreach.m.iteration - 1) is div by 4}>
+										<tr>
+										<{/if}>
+											<td width=420px>
+												<{if in_array($marca.id, $chk_marcas)}>
+													<input type="checkbox" name="chk_marcas[]" value="<{$marca.id}>" checked="checked" />
+												<{else}>
+													<input type="checkbox" name="chk_marcas[]" value="<{$marca.id}>" />
+												<{/if}>
+												<label class="check_label"><{$marca.descripcion|htmlentities}></label>
+											</td>
+									<{/foreach}>
+								</table>
+							</div>
+                        </dd>
+                    </dl>
+
+                    <dl>
+                        <dt><label>Seleccione&nbsp;Especialidades&nbsp;*</label></dt>
+                        <dd>
+							<div>
+								<table>
+									<{foreach from=$combustibles item=combustible name=c}>
+										<{if ($smarty.foreach.c.iteration - 1) is div by 3 && $smarty.foreach.c.iteration > 1}>
+										</tr>
+										<{/if}>
+										<{if ($smarty.foreach.c.iteration - 1) is div by 3}>
+										<tr>
+										<{/if}>
+											<td width=400px>
+												<{if in_array($combustible.id, $chk_combustibles)}>
+													<input type="checkbox" name="chk_combustibles[]" value="<{$combustible.id}>" checked="checked" />
+												<{else}>
+													<input type="checkbox" name="chk_combustibles[]" value="<{$combustible.id}>" />
+												<{/if}>
+												<label class="check_label"><{$combustible.descripcion|htmlentities}></label>
+											</td>
+									<{/foreach}>
+								</table>
+							</div>
+                        </dd>
+                    </dl>
+

@@ -1,0 +1,56 @@
+                    <dl>
+                        <dt><label for="rut">RUT&nbsp;*</label></dt>
+                        <dd><input type="text" name="rut" id="rut" size="75" value="<{$rut|htmlentities}>" /></dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="razon_social">Raz&oacute;n&nbsp;Social&nbsp;*</label></dt>
+                        <dd><input type="text" name="razon_social" id="razon_social" size="75" value="<{$razon_social|htmlentities}>" /></dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="nombre_fantasia">Nombre&nbsp;Fantas&iacute;a&nbsp;*</label></dt>
+                        <dd><input type="text" name="nombre_fantasia" id="nombre_fantasia" size="75" value="<{$nombre_fantasia|htmlentities}>" /></dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="direccion_facturacion">Direcci&oacute;n&nbsp;de&nbsp;Facturaci&oacute;n&nbsp;*</label></dt>
+                        <dd><input type="text" name="direccion_facturacion" id="direccion_facturacion" size="75" value="<{$direccion_facturacion|htmlentities}>" /></dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="web">Sitio WEB:</label></dt>
+                        <dd><input type="text" name="web" id="web" size="75" value="<{$web}>" /></dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="texto_html">Detalle&nbsp;HTML</label></dt>
+                        <!--dd><input type="text" name="detalle_html" id="detalle_html" size="75" value="<{$detalle_html|htmlentities}>" /></dd-->
+                        <dd><textarea rows="10" cols="75" name="texto_html" id="texto_html"><{$texto_html}></textarea> </dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="estado">Estado</label></dt>
+                        <dd>
+                            <select size="1" name="estado" id="estado" value="<{$estado}>">
+
+						    	<{foreach from=$estados item=estado}>
+						    	
+						    		<option value="<{$estado.id}>"><{$estado.descripcion}></option>
+						            
+						        <{/foreach}>
+
+                                
+                            </select>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="bloqueo">Bloqueo:</label></dt>
+                        <dd>
+                            <select size="1" name="bloqueo" id="bloqueo" value="<{$bloqueo}>">
+
+						    	<{foreach from=$bloqueos item=bloqueo}>
+						    	
+						    		<option value="<{$bloqueo.id}>"><{$bloqueo.descripcion}></option>
+						            
+						        <{/foreach}>
+
+                                
+                            </select>
+                        </dd>
+                    </dl>
+

@@ -1,0 +1,660 @@
+<{include file="top.html"}>
+
+<script type="text/javascript">
+
+	$(document).ready(function() {
+		
+		
+		
+		<{if isset($exito)}>
+			<{if $exito}>
+			    
+				var choices;
+				var data;
+				
+				var sel_marca;
+				var sel_servicio;
+				var sel_combustible;
+				var sel_region;
+				var sel_comuna;
+			
+				// selecciono los itemes elegidos pre submit
+				
+				sel_marca = $('#sel_marca').val();
+				
+				if (sel_marca != 0) { 
+					$('#marca').val(sel_marca);
+				}
+				
+				sel_servicio = $('#sel_servicio').val();
+				
+				if (sel_servicio != 0) { 
+					$('#servicio').val(sel_servicio);
+				}
+
+				sel_combustible = $('#sel_combustible').val();
+				
+				if (sel_combustible != 0) { 
+					$('#combustible').val(sel_combustible);
+				}
+
+				sel_region = $('#sel_region').val();
+				
+				if (sel_region != 0) { 
+					$('#region').val(sel_region);
+				}
+
+				sel_comuna = $('#sel_comuna').val();
+				
+				if (sel_comuna != 0) {
+		
+					// cargo las comunas presentes presubmit; las opciones se graban en la sesion en comando Ajax
+					choices = '';
+		         	choices += "<option value=\"\" selected=\"selected\">Comuna</option>";
+		        
+					<{if isset($options_comunas)}>	
+						data = {$options_comunas};
+		                
+			            $.each(data.comunas, function(index, comuna) {
+			                choices += "<option value=\"" + comuna.id.toString() + "\">";
+			                choices += comuna.descripcion.toString();
+			                choices += "</option>";
+			            });
+			            
+					<{/if}>
+		          
+					// elimino el contenido del control
+		            $('#comuna').text('');
+		            // agrego las opciones al combobox
+		            $(choices).appendTo('#comuna');
+					// dejo seleccionado el mismo pre submit
+					$('#comuna').val(sel_comuna)
+					
+					// habilito combo de comunas, ya que no hay region seleccionada
+					$('#comuna').attr('disabled', false);
+				}
+						
+			<{/if}>
+		<{else}>
+			$('#comuna').attr('disabled', true);
+		<{/if}>
+		
+		
+		
+		
+		$('.confirm_delete').click(function(e) {
+			var self = this;
+			
+			var id_proveedor = $(this).attr('href');
+
+			e.preventDefault();
+			
+			if($(this).next('div.question').length <= 0)  
+				$(this).after('<div class="question">Est&aacute; seguro?<br> <span class="yes">S&iacute;</span><span class="cancel">Cancelar</span></div>');  
+			
+			$(this).next('.question').animate({opacity: 1}, 300);
+			
+			$('.yes').bind('click', function(){
+				var data;
+				var str;
+				
+				$.ajax({
+					 async: false,
+					 url: "<{$receiver}>?do=Ajax&req=deleteProveedor&id_proveedor=" + id_proveedor,
+					 type: 'GET',
+					 dataType: 'json',
+					 error: function(xhr){
+						if (xhr.status == 401) {
+							// sesion expirada, redirijo a login
+							window.location = "<{$receiver}>";
+						}
+						else {
+							// error en ajax
+							alert("An error occured: " + xhr.status + " " + xhr.statusText);
+						}
+					 },
+					 success: function(output_string){
+						//alert(output_string);
+						 data = output_string;
+					 }
+				});
+		
+				if (data.respuesta == '1') {
+					$(self).parent().parent().hide();
+				}
+			});
+	
+			$('.cancel').bind('click', function(){
+				$(this).parents('.question').fadeOut(300, function() {
+					$(this).remove();
+				});
+			});
+			
+		}); // end function
+
+		$('.confirm_reset').click(function(e) {
+			var self = this;
+			
+			var id_proveedor = $(this).attr('href');
+
+			e.preventDefault();
+			
+			if($(this).next('div.question').length <= 0)  
+				$(this).after('<div class="question">Est&aacute; seguro?<br> <span class="yes">S&iacute;</span><span class="cancel">Cancelar</span></div>');  
+			
+			$(this).next('.question').animate({opacity: 1}, 300);
+			
+			$('.yes').bind('click', function(){
+				var data;
+				var str;
+				
+				$.ajax({
+					 async: false,
+					 url: "<{$receiver}>?do=Ajax&req=resetPassword&id_proveedor=" + id_proveedor,
+					 type: 'GET',
+					 dataType: 'json',
+					 error: function(xhr){
+						if (xhr.status == 401) {
+							// sesion expirada, redirijo a login
+							window.location = "<{$receiver}>";
+						}
+						else {
+							// error en ajax
+							alert("An error occured: " + xhr.status + " " + xhr.statusText);
+						}
+					 },
+					 success: function(output_string){
+						//alert(output_string);
+						 data = output_string;
+					 }
+				});
+		
+				if (data.respuesta == '1') {
+					$(self).parent().parent().children()[4].textContent = "No";
+				}
+
+				$(this).parents('.question').fadeOut(300, function() {
+					$(this).remove();
+				});
+
+				//$(self).remove();
+			});
+	
+			$('.cancel').bind('click', function(){
+				$(this).parents('.question').fadeOut(300, function() {
+					$(this).remove();
+				});
+			});
+			
+		}); // end function
+		/*
+		$(".checkbox").change(function() {
+			if(this.checked) {
+				//Do stuff
+			}
+			else {
+			}
+		}); // end function
+		*/
+		$('#region').change(function() {
+			// al cambiar la region por algo valido, debo cargar en el combo de comuna las que le pertenecen
+			// si se selecciona 'Region', debo descargar ciudades y R/E's
+			var data;
+			var opt;
+			var choices;
+			var sel = $(this).val().toString();
+			
+			// alert(sel);
+			
+			if ($(this).hasClass('error')) {
+				$(this).removeClass('error');
+				$('.error').remove();
+			}
+
+			if (sel == 0) {
+				// elegido titulo
+				
+				// genero opciones de combo de ciudades
+				choices = '';
+				choices += "<option value=\"\" selected=\"selected\">Comuna</option>";
+
+				// deshabilito select (y niceform) de comunas
+				$('#comuna').attr('disabled', true);
+			}
+			else {
+				// region valida del combo
+								
+				// genero opciones de select comuna
+				$.ajax({
+					async: false,
+					url: "<{$receiver}>?do=Ajax&req=getComunas&id_region=" + sel,
+					type: 'GET',
+					dataType: 'json',
+					error: function(xhr){
+						if (xhr.status == 401) {
+							// sesion expirada, redirijo a login
+							window.location = "<{$receiver}>";
+						}
+						else {
+							// error en ajax
+							alert("An error occured: " + xhr.status + " " + xhr.statusText);
+						}
+					},
+					success: function(output_string){
+						//alert(output_string);
+
+						choices = '';
+						//var choices = "<select size=\"1\" name=\"ciudad\" id=\"ciudad\" >"; 
+						choices += "<option value=\"\" selected=\"selected\">Comuna</option>";
+
+						$.each(output_string.comunas, function(index, comuna) {
+							choices += "<option value=\"" + comuna.id.toString() + "\">";
+							choices += comuna.descripcion.toString();
+							choices += "</option>";
+						});
+						
+						// agrego las opciones generadas al select de comunas
+						$('#comuna').text('');
+						$(choices).appendTo('#comuna');
+						
+						// re-genero niceform de select ciudades
+						// * recrea_nf_select($('#ciudad'), 2);
+
+						// habilito select (y niceform) de comunas
+						$('#comuna').attr('disabled', false);
+					}
+				});
+
+			}
+			
+		}); // end change
+					
+		// texto en USER HELP DESK
+		$('.sidebar_box p').html('<{$user_help_desk}>');
+			
+		paginacion();
+		
+		$('#dialog').dialog({
+		    autoOpen: false,
+		    height: 280,
+		    modal: true,
+		    resizable: false,
+		    buttons: {
+		    	'Cerrar': function() {
+		    		$(this).dialog('close');
+		      	}
+		  	}
+		});
+		/*
+		$.NiceJForms.build({
+			imagesPath:"nicejforms/css/images/default/"
+		});
+		*/
+	}); // end ready
+	
+    function exportar() {
+    	/*
+        $("#export_plataforma").val($("#plataforma").val());
+        $("#export_region").val($("#region").val());
+        $("#export_ciudad").val($("#ciudad").val());
+        $("#export_re").val($("#re").val());
+
+        $("#export_fabricante").val($("#fabricante").val());
+        $("#export_modelo").val($("#modelo").val());
+        */
+        $("#export").submit();
+    }
+
+	function detalleProveedor(id_proveedor) {
+		// consulto los detalles del proveedor
+		var data;
+		var str;
+		
+        $.ajax({
+             async: false,
+             url: "<{$receiver}>?do=Ajax&req=getProveedor&id_proveedor=" + id_proveedor,
+             type: 'GET',
+             dataType: 'json',
+             error: function(xhr){
+             	if (xhr.status == 401) {
+             		// sesion expirada, redirijo a login
+             		window.location = "<{$receiver}>";
+             	}
+             	else {
+             		// error en ajax
+            	    alert("An error occured: " + xhr.status + " " + xhr.statusText);
+             	}
+             },
+             success: function(output_string){
+             	//alert(output_string);
+                 data = output_string;
+             }
+        });
+
+		str =
+			'<table>'+
+			'  <tr>'+
+			'    <th align="left">Nombre</h>'+
+			'    <td>'+data.proveedor.nombre+'</td>'+
+			'  </tr>'+
+			'  <tr>'+
+			'    <th align="left">Direcci&oacute;n</h>'+
+			'    <td>'+data.proveedor.direccion+'</td>'+
+			'  </tr>'+
+			'  <tr>'+
+			'    <th align="left">Correo</h>'+
+			'    <td>'+data.proveedor.correo+'</td>'+
+			'  </tr>'+
+			'  <tr>'+
+			'    <th align="left">Tel&eacute;fono</h>'+
+			'    <td>'+data.proveedor.telefono+'</td>'+
+			'  </tr>'+
+			'  <tr>'+
+			'    <th align="left">Latitud</h>'+
+			'    <td>'+data.proveedor.latitud+'</td>'+
+			'  </tr>'+
+			'  <tr>'+
+			'    <th align="left">Longitud</h>'+
+			'    <td>'+data.proveedor.longitud+'</td>'+
+			'  </tr>'+
+			'  <tr>'+
+			'    <th align="left">Valor min</h>'+
+			'    <td>'+data.proveedor.valor_minimo+'</td>'+
+			'  </tr>'+
+			'  <tr>'+
+			'    <th align="left">Valor max</h>'+
+			'    <td>'+data.proveedor.valor_maximo+'</td>'+
+			'  </tr>'+
+			'  <tr>'+
+			'    <th align="left">Calificaci&oacute;n</h>'+
+			'    <td>'+data.proveedor.calificacion+'</td>'+
+			'  </tr>'+
+			'  <tr>'+
+			'    <th align="left">Sitio WEB</h>'+
+			'    <td>'+data.proveedor.url+'</td>'+
+			'  </tr>'+
+			'</table>';
+
+		$('#p1').html(str);
+		
+		$('#dialog').dialog('open');
+	}	
+	
+</script>
+	
+<!--script type="text/javascript" src="js/gestiona_proveedores.js"></script-->
+
+</head>
+<body>
+<!-- the dialog contents -->
+<div id="dialog" title="Detalle de Proveedor">
+	<div id="p1"></div>
+</div>
+
+<div id="main_container">
+
+	<{include file="header.html"}>
+    
+    <div class="main_content">
+    
+    <{include file="upper_menu.html"}>              
+                    
+    <div class="center_content">  
+    
+    
+    
+    <div class="left_content">
+    
+    		<div class="sidebar_search">
+	            <form action="<{$receiver}>?do=GestionaProveedores" method="post" id="buscar">
+		            <input type="text" name="search_keyword_proveedor" id="search_keyword_proveedor" value="<{$search_keyword_proveedor}>" />
+		            <input type="image" src="images/search.png" />
+	            </form>            
+            </div>
+    
+            <div class="sidebarmenu">
+				<!--
+                <a class="menuitem" href="<{$receiver}>?do=DisplayHome">Buscar Repuesto</a>
+				-->
+				
+				<{if ($usuario_aplicacion->nombre_usuario == 'admin')}>
+					<a class="menuitem" href="<{$receiver}>?do=AgregaProveedor">Agregar Proveedor</a>
+				<{/if}>
+                
+                <!--
+                <a class="menuitem" href="">Blue button</a>
+                
+                <a class="menuitem_green" href="">Green button</a>
+                
+                <a class="menuitem_red" href="">Red button</a>
+                -->    
+            </div>
+            
+            <{include file="sidebar_box.html"}>
+            
+            <!--
+            
+            <div class="sidebar_box">
+                <div class="sidebar_box_top"></div>
+                <div class="sidebar_box_content">
+                <h4>Important notice</h4>
+                <img src="images/notice.png" alt="" title="" class="sidebar_icon_right" />
+                <p>
+Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                </p>                
+                </div>
+                <div class="sidebar_box_bottom"></div>
+            </div>
+            
+            -->
+            <!--
+            <div class="sidebar_box">
+                <div class="sidebar_box_top"></div>
+                <div class="sidebar_box_content">
+                <h5>Download photos</h5>
+                <img src="images/photo.png" alt="" title="" class="sidebar_icon_right" />
+                <p>
+Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                </p>                
+                </div>
+                <div class="sidebar_box_bottom"></div>
+            </div>  
+            -->
+            <!--
+            <div class="sidebar_box">
+                <div class="sidebar_box_top"></div>
+                <div class="sidebar_box_content">
+                <h3>To do List</h3>
+                <img src="images/info.png" alt="" title="" class="sidebar_icon_right" />
+                <ul>
+                <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</li>
+                 <li>Lorem ipsum dolor sit ametconsectetur <strong>adipisicing</strong> elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</li>
+                  <li>Lorem ipsum dolor sit amet, consectetur <a href="#">adipisicing</a> elit.</li>
+                   <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</li>
+                    <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</li>
+                     <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</li>
+                </ul>                
+                </div>
+                <div class="sidebar_box_bottom"></div>
+            </div>
+            --> 
+    
+    </div>  
+    
+    <div class="right_content">            
+        
+    <h2>B&uacute;squeda de Proveedores</h2>
+                    
+ 		<div class="form">
+         	<form action="<{$receiver}>?do=GestionaProveedores" method="post" class="niceform" id="edita_usuario">
+				<!--estos hidden se cargan post submit con los valores de los combos seleccionados pre submit-->
+				<input type="hidden" name="sel_marca" id="sel_marca" value="<{$marca}>" />
+				<input type="hidden" name="sel_servicio" id="sel_servicio" value="<{$servicio}>" />
+				<input type="hidden" name="sel_combustible" id="sel_combustible" value="<{$combustible}>" />
+				<input type="hidden" name="sel_region" id="sel_region" value="<{$region}>" />
+				<input type="hidden" name="sel_comuna" id="sel_comuna" value="<{$comuna}>" />
+				<fieldset>
+                    <dl>
+                        <dt><label for="marca">Marca:</label></dt>
+                        <dd>
+                            <select size="1" name="marca" id="marca" value="0">
+                                <option value="">Marca</option>
+
+						    	<{foreach from=$marcas item=marca}>
+						    	
+						    		<option value="<{$marca.id}>"><{$marca.descripcion}></option>
+						            
+						        <{/foreach}>
+
+                                
+                            </select>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="servicio">Servicio:</label></dt>
+                        <dd>
+                            <select size="1" name="servicio" id="servicio" value="0">
+                                <option value="">Servicio</option>
+
+						    	<{foreach from=$servicios item=servicio}>
+						    	
+						    		<option value="<{$servicio.id}>"><{$servicio.descripcion}></option>
+						            
+						        <{/foreach}>
+
+                                
+                            </select>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="combustible">Combustible:</label></dt>
+                        <dd>
+                            <select size="1" name="combustible" id="combustible" value="0">
+                                <option value="">Combustible</option>
+
+						    	<{foreach from=$combustibles item=combustible}>
+						    	
+						    		<option value="<{$combustible.id}>"><{$combustible.descripcion}></option>
+						            
+						        <{/foreach}>
+
+                                
+                            </select>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="region">Regi&oacute;n:</label></dt>
+                        <dd>
+                            <select size="1" name="region" id="region" value="0">
+                                <option value="">Regi&oacute;n</option>
+
+						    	<{foreach from=$regiones item=region}>
+						    	
+						    		<option value="<{$region.id}>"><{$region.descripcion|htmlentities}></option>
+						            
+						        <{/foreach}>
+
+                                
+                            </select>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="comuna">Comuna:</label></dt>
+                        <dd>
+                            <select size="1" name="comuna" id="comuna" value="0">
+                                <option value="">Comuna</option>
+                                
+                                
+                            </select>
+                        </dd>
+                    </dl>
+                    <dl class="submit">
+                    	<input type="submit" name="submit" id="submit" value="Buscar" />
+                    </dl>
+    
+    			</fieldset>
+    		</form>
+         </div>           
+                   
+		<!-- the input fields that will hold the variables we will use -->  
+		<input type='hidden' id='current_page' />  
+		<input type='hidden' id='show_per_page' />  
+                    
+		<table id="rounded-corner" summary="2007 Major IT Companies' Profit">
+			<thead>
+				<tr>
+					<th scope="col" class="rounded-company">Nombre&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+					<th scope="col" class="rounded-company">Sucursal&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+					<th scope="col" class="rounded-company">Regi&oacute;n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+					<th scope="col" class="rounded-company">Comuna&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+					<th scope="col" class="rounded">Direcci&oacute;n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+					<th scope="col" class="rounded-q4">Acciones</th>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr>
+					<{if isset($exito)}>
+					   <{if $exito}>
+							<td colspan="4" class="rounded-foot-left"><em>La b&uacute;squeda arroj&oacute; <{$row_number}> registro(s).</em></td>
+						<{/if}>
+					<{else}>
+						<td colspan="4" class="rounded-foot-left"><em>&nbsp;</em></td>
+					<{/if}>
+					<td class="rounded-foot-right">&nbsp;</td>
+
+				</tr>
+			</tfoot>
+			<tbody>
+				<{foreach from=$search_result item=proveedor}>
+					<tr>
+						<td><{$proveedor.nombre_fantasia|htmlentities}></td>
+						<{* <td><a href="<{$receiver}>?do=EditaSucursal&id_proveedor_sucursal=<{$proveedor_sucursal.id}>" class="logout"><{$proveedor.sucursal|htmlentities}></a></td> *}>
+						<td><{$proveedor.sucursal|htmlentities}></td>
+						<td><{$proveedor.region_breve|htmlentities}></td>
+						<td><{$proveedor.comuna|htmlentities}></td>
+						<td><{$proveedor.direccion|htmlentities}></td>
+						
+						<td>
+							<{if ($usuario_aplicacion->nombre_usuario == 'admin')}>
+			
+									<{* <a href="#" onClick="detalleProveedor(<{$proveedor.id}>); return false"><img src="images/detail.png" alt="Detalle" title="Detalle" border="0" /></a> *}>
+									
+									<a href="<{$receiver}>?do=EditaProveedor&id_proveedor=<{$proveedor.id}>"><img src="images/edit.png" alt="" title="Edita Proveedor" border=0 width=16 height=16 /></a>
+			
+									<{* <a href="<{$receiver}>?do=VerConsultas&id_proveedor=<{$proveedor.id}>"><img src="images/help.png" alt="" title="Consultas" border=0 width=16 height=16 /></a> *}>
+
+									<{* <a href="<{$proveedor.id}>" class="confirm_delete"><img src="images/trash.png" alt="Elimina Proveedor" title="Elimina Proveedor" border="0" /></a> *}>
+			
+							<{/if}>
+						</td>
+					</tr>
+				<{/foreach}>
+			</tbody>
+		</table>
+
+		<{if isset($exito)}>
+			<{if $exito && $row_number > 0}>
+				<!-- An empty div which will be populated using jQuery -->
+				<div class="pagination">
+					<!--<span class="disabled"><< prev</span><span class="current">1</span><a href="">2</a><a href="">3</a><a href="">4</a><a href="">5</a><a href="">10</a><a href="">11</a><a href="">12</a>...<a href="">100</a><a href="">101</a><a href="">next >></a>-->
+				</div> 
+			<{/if}>
+		<{/if}>
+     
+     </div><!-- end of right content-->
+            
+                    
+  </div>   <!--end of center content -->               
+                    
+                    
+    
+    
+    <div class="clear"></div>
+    </div> <!--end of main content-->
+	
+    
+    <{include file="footer.html"}>
+
+</div>		
+</body>
+</html>

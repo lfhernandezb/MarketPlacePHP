@@ -1,0 +1,263 @@
+<?xml version="1.0"?>
+<config>
+        <!--****According to the manual, rootFolder and rootURL should be changed to reflect your machine's 
+                installation. However, you do not need to change it becuase we are using relative path 
+                and virtual URL
+	****-->
+
+	<!--****Root Folder can be absolute path but we will use relative path, 
+                so ignore the node below
+	****-->
+	<rootFolder>.</rootFolder>
+
+	<!--****Root folder is the relative to the config file folder
+                (Here root folder is the same as the config file folder)
+	****-->
+        <rootFolder1>.</rootFolder1>
+
+	<!--****Root URL can be absolute URL but we will use virtual URL, 
+                so ignore the node below
+	****-->
+	<rootURL1>http://localhost/eoceneSystem</rootURL1>
+
+	<!--****Here root URL is virtual to the Web root****-->
+	<rootURL>/</rootURL>
+
+	<defaultCommand>GestionaProveedores</defaultCommand>
+<!--	<templateEngine>EoceneTemplateEngine</templateEngine>	-->
+	<templateEngine>Smarty</templateEngine>
+	<receivers>
+		<main>index.php</main>
+	</receivers>
+	<paths>
+		<commands>/../commands</commands>
+		<templates>/../templates</templates>
+		<plugCommands>/../commands</plugCommands>
+		<plugTemplates>/../templates</plugTemplates>
+		<application>/../</application>
+		<lib>/../lib</lib>
+		<smarty_dir>/../classes/Smarty/libs</smarty_dir>
+		<smarty_config>/../configs</smarty_config>
+		<smarty_compile>/../templates_c</smarty_compile>
+		<smarty_cache>/../cache</smarty_cache>
+	</paths>
+	<dbInfo>
+		<dbType>mysql</dbType>
+		<host>localhost</host>
+		<userid>mktp</userid>
+		<password>mktp</password>
+		<database>marketplace</database>
+		<charset>latin1</charset>
+	</dbInfo>
+	<!--****appSettings is an optional node. You can place any thing here 
+                and access it from $fc->appSettings
+	****-->
+	<appSettings>
+		<!--***If you are using a language file, you have to define a node 
+                       <langFile>Location of language file here</langFile>
+                       Location of language file should be wrt rootFolder
+		       To use a language file, change the langFile1 node below to langFile
+                ****-->
+		<langFile1>/location/of/userLanguageFile.txt</langFile1>
+		<html_email>no</html_email>
+	</appSettings>
+	<commands>
+		<!--*** VEHICULOS ***-->
+		<GestionaVehiculos>
+			<class>GestionaVehiculos</class>
+			<success>GestionaVehiculos.html</success>
+		</GestionaVehiculos>
+		<VerVehiculos>
+			<class>VerVehiculos</class>
+			<success>VerVehiculos.html</success>
+		</VerVehiculos>
+		<VerLogs>
+			<class>VerLogs</class>
+			<success>VerLogs.html</success>
+		</VerLogs>
+		<Usuarios>
+			<class>Usuarios</class>
+			<success>Usuarios.html</success>
+		</Usuarios>
+		<ExportarHome>
+			<class>ExportarHome</class>
+			<success>ExportarHome.html</success>
+		</ExportarHome>
+		<AgregaRepuesto>
+			<class>AgregaRepuesto</class>
+			<success>AgregaRepuesto.html</success>
+		</AgregaRepuesto>
+		<AgregaRepuestoMasivo>
+			<class>AgregaRepuestoMasivo</class>
+			<success>AgregaRepuestoMasivo.html</success>
+		</AgregaRepuestoMasivo>
+		<UtilizaRepuesto>
+			<class>UtilizaRepuesto</class>
+			<success>UtilizaRepuesto.html</success>
+		</UtilizaRepuesto>
+		<MueveRepuesto>
+			<class>MueveRepuesto</class>
+			<success>MueveRepuesto.html</success>
+		</MueveRepuesto>
+		<EliminaRepuesto>
+			<class>EliminaRepuesto</class>
+		</EliminaRepuesto>
+		<EstableceUmbral>
+			<class>EstableceUmbral</class>
+			<success>EstableceUmbral.html</success>
+		</EstableceUmbral>
+		<EditaModelo>
+			<class>EditaModelo</class>
+			<success>EditaModelo.html</success>
+		</EditaModelo>
+		<!--*** SEGURIDAD ***-->
+		<Login>
+			<class>Login</class>
+			<success>Login.html</success>
+		</Login>
+		<Logout>
+			<class>Logout</class>
+		</Logout>
+		<!--*** USUARIOS ***-->
+		<GestionaUsuarios>
+			<class>GestionaUsuarios</class>
+			<success>GestionaUsuarios.html</success>
+		</GestionaUsuarios>
+		<AgregaUsuario>
+			<class>AgregaUsuario</class>
+			<success>AgregaUsuario.html</success>
+		</AgregaUsuario>
+		<EditaUsuario>
+			<class>EditaUsuario</class>
+			<success>EditaUsuario.html</success>
+		</EditaUsuario>
+		<EliminaUsuario>
+			<class>EliminaUsuario</class>
+		</EliminaUsuario>
+		<Administracion>
+			<class>Administracion</class>
+			<success>Administracion.html</success>
+		</Administracion>
+		<ActivaCuenta>
+			<class>ActivaCuenta</class>
+			<success>ActivaCuenta.html</success>
+		</ActivaCuenta>
+		<ExportarUsuarios>
+			<class>ExportarUsuarios</class>
+			<success>ExportarUsuarios.html</success>
+		</ExportarUsuarios>
+		<!--*** PROVEEDORES ***-->
+		<GestionaProveedores>
+			<class>GestionaProveedores</class>
+			<success>GestionaProveedores.html</success>
+		</GestionaProveedores>
+		<AgregaProveedor>
+			<class>AgregaProveedor</class>
+			<success>AgregaProveedor.html</success>
+		</AgregaProveedor>
+		<EditaProveedor>
+			<class>EditaProveedor</class>
+			<success>EditaProveedor.html</success>
+		</EditaProveedor>
+		<AgregaSucursal>
+			<class>AgregaSucursal</class>
+			<success>AgregaSucursal.html</success>
+		</AgregaSucursal>
+		<EditaSucursal>
+			<class>EditaSucursal</class>
+			<success>EditaSucursal.html</success>
+		</EditaSucursal>
+		<VerConsultas>
+			<class>VerConsultas</class>
+			<success>VerConsultas.html</success>
+		</VerConsultas>
+		<EliminaProveedor>
+			<class>EliminaProveedor</class>
+		</EliminaProveedor>
+		<!--*** PARAMETROS ***-->
+		<GestionaParametros>
+			<class>GestionaParametros</class>
+			<success>GestionaParametros.html</success>
+		</GestionaParametros>
+		<AgregaParametro>
+			<class>AgregaParametro</class>
+			<success>AgregaParametro.html</success>
+		</AgregaParametro>
+		<EditaParametro>
+			<class>EditaParametro</class>
+			<success>EditaParametro.html</success>
+		</EditaParametro>
+		<EliminaParametro>
+			<class>EliminaParametro</class>
+		</EliminaParametro>
+		<!--*** CAMPANIAS ***-->
+		<GestionaCampanias>
+			<class>GestionaCampanias</class>
+			<success>GestionaCampanias.html</success>
+		</GestionaCampanias>
+		<AgregaCampania>
+			<class>AgregaCampania</class>
+			<success>AgregaCampania.html</success>
+		</AgregaCampania>
+		<EditaCampania>
+			<class>EditaCampania</class>
+			<success>EditaCampania.html</success>
+		</EditaCampania>
+		<EliminaCampania>
+			<class>EliminaCampania</class>
+		</EliminaCampania>
+		<!--*** REPORTES ***-->
+		<ReporteActividad>
+			<class>ReporteActividad</class>
+			<success>ReporteActividad.html</success>
+		</ReporteActividad>
+		<ReporteExistencias>
+			<class>ReporteExistencias</class>
+			<success>ReporteExistencias.html</success>
+		</ReporteExistencias>
+		<ReporteExistenciasPorRegion>
+			<class>ReporteExistenciasPorRegion</class>
+			<success>ReporteExistenciasPorRegion.html</success>
+		</ReporteExistenciasPorRegion>
+		<DetalleExistencias>
+			<class>DetalleExistencias</class>
+			<success>DetalleExistencias.html</success>
+		</DetalleExistencias>
+		<ExportarExistencias>
+			<class>ExportarExistencias</class>
+			<success>ExportarExistencias.html</success>
+		</ExportarExistencias>
+		<ExportarExistenciasPorRegion>
+			<class>ExportarExistenciasPorRegion</class>
+			<success>ExportarExistenciasPorRegion.html</success>
+		</ExportarExistenciasPorRegion>
+		<!--*** AJAX ***-->
+		<Ajax>
+			<class>Ajax</class>
+		</Ajax>
+		<!--*** PARAMETROS ***-->
+		<Zonas>
+			<class>Zonas</class>
+			<success>Zonas.html</success>
+		</Zonas>
+		<Regiones>
+			<class>Regiones</class>
+			<success>Regiones.html</success>
+		</Regiones>
+		<EditaZona>
+			<class>EditaZona</class>
+			<success>EditaZona.html</success>
+		</EditaZona>
+		<AgregaZona>
+			<class>AgregaZona</class>
+			<success>AgregaZona.html</success>
+		</AgregaZona>
+		<!--*** ADMINISTRACION ***-->
+		<AdministraCuenta>
+			<class>AdministraCuenta</class>
+			<success>AdministraCuenta.html</success>
+		</AdministraCuenta>
+	</commands>
+	<plugCommands>
+	</plugCommands>
+</config>
